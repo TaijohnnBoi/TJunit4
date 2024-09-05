@@ -624,10 +624,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 28f211b111a31d54aa7a067f01687948, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enemyPrefab: {fileID: 4662858293935523908, guid: fa6899310f44bcc4a876220e23a8889d, type: 3}
+  enemyPrefabs:
+  - {fileID: 4662858293935523908, guid: fa6899310f44bcc4a876220e23a8889d, type: 3}
+  - {fileID: 4662858293935523908, guid: e0b4f778cd37a7a45b611c9b8b76b640, type: 3}
   enemyCount: 0
   waveNumber: 1
-  powerupPrefab: {fileID: 8852423987488955478, guid: a61900e19bfe02b47a58b0c03488db2a, type: 3}
+  powerupPrefabs: {fileID: 8852423987488955478, guid: a61900e19bfe02b47a58b0c03488db2a, type: 3}
 --- !u!1 &1624757913
 GameObject:
   m_ObjectHideFlags: 0
