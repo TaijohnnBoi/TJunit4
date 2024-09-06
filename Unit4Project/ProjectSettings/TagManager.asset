@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Enemy
   - Powerup
+  - PowerUpType
   layers:
   - Default
   - TransparentFX
