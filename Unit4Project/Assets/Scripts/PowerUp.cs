@@ -7,10 +7,10 @@ public enum PowerUpType { None, Pushback, Rockets, Smash }
 public class PowerUp : MonoBehaviour
 {
     public PowerUpType powerUpType;
-    public float hangTime; 
-    public float smashSpeed; 
-    public float explosionForce
-    public float explosionRadius; 
+    public float hangTime;
+    public float smashSpeed;
+    public float explosionForce;  // Added missing semicolon
+    public float explosionRadius;
     bool smashing = false;
     float floorY;
 }
