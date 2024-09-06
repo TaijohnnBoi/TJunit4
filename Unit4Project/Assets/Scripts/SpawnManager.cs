@@ -10,6 +10,10 @@ public class SpawnManager : MonoBehaviour
     public int waveNumber = 1;
     public GameObject[] powerupPrefabs;
 
+    public GameObject bossPrefab;
+    public GameObject[] miniEnemyPrefabs;
+    public int bossRound;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -38,6 +42,15 @@ public class SpawnManager : MonoBehaviour
             SpawnEnemyWave(waveNumber);
             int randomPowerup = Random.Range(0, powerupPrefabs.Length);
             Instantiate(powerupPrefabs[randomPowerup], GenerateSpawnPosition(), powerupPrefabs[randomPowerup].transform.rotation);
+
+            if (enemyCount == 0)
+            {
+                SpawnBossWave(waveNumber);
+            }
+            else
+            {
+                SpawnEnemyWave(waveNumber);
+            }
         }
     }
 
@@ -50,4 +63,18 @@ public class SpawnManager : MonoBehaviour
 
         return RandomPos;
     }
-}
+
+    void SpawnBossWave(int currentRound)
+    {
+        int miniEnemysToSpawn; 
+        //We dont want to divide by 0!
+        if (bossRound != 0) 
+        {
+            miniEnemysToSpawn = currentRound / bossRound; 
+        } 
+        else
+        { 
+            miniEnemysToSpawn = 1; } var boss = Instantiate(bossPrefab, GenerateSpawnPosition(), bossPrefab.transform.rotation); 
+            boss.GetComponent<Enemy>().miniEnemySpawnCount = miniEnemysToSpawn; 
+        }
+    }

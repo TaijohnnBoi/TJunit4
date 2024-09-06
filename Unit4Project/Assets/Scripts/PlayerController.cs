@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour
@@ -13,33 +12,43 @@ public class PlayerController : MonoBehaviour
 
     public PowerUpType currentPowerUp = PowerUpType.None;
     public GameObject rocketPrefab;
-    GameObject tmpRocket;
-    Coroutine powerupCountdown;
+    private GameObject tmpRocket;
+    private Coroutine powerupCountdown;
 
     public float hangTime;
     public float smashSpeed, explosionForce, explosionRadius;
-    bool smashing = false; // Added missing variable
-    float floorY;
+    private bool smashing = false;
+    private float floorY;
 
-    // Start is called before the first frame update
     void Start()
     {
         playerRb = GetComponent<Rigidbody>();
         focalpoint = GameObject.Find("Focal Point");
     }
 
-    // Update is called once per frame
     void Update()
+    {
+        HandleMovement();
+        HandlePowerUps();
+    }
+
+    private void HandleMovement()
     {
         float forwardInput = Input.GetAxis("Vertical");
         playerRb.AddForce(focalpoint.transform.forward * forwardInput * speed);
         powerupIndicator.transform.position = transform.position + new Vector3(0, -0.5f, 0);
+    }
+
+    private void HandlePowerUps()
+    {
         if (currentPowerUp == PowerUpType.Rockets && Input.GetKeyDown(KeyCode.F))
         {
             LaunchRockets();
         }
+
         if (currentPowerUp == PowerUpType.Smash && Input.GetKeyDown(KeyCode.Space) && !smashing)
         {
+            Debug.Log("Smash power-up is active. Starting Smash coroutine.");
             smashing = true;
             StartCoroutine(Smash());
         }
@@ -52,11 +61,11 @@ public class PlayerController : MonoBehaviour
             hasPowerup = true;
             powerupIndicator.gameObject.SetActive(true);
 
-            // Access the PowerUp component and its powerUpType field
             PowerUp powerUpComponent = other.gameObject.GetComponent<PowerUp>();
             if (powerUpComponent != null)
             {
-                currentPowerUp = powerUpComponent.powerUpType; // Use powerUpType here
+                currentPowerUp = powerUpComponent.powerUpType;
+                Debug.Log("Acquired power-up: " + currentPowerUp);
             }
             else
             {
@@ -72,13 +81,13 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-
     IEnumerator PowerupCountdownRoutine()
     {
         yield return new WaitForSeconds(7);
         hasPowerup = false;
         currentPowerUp = PowerUpType.None;
         powerupIndicator.gameObject.SetActive(false);
+        Debug.Log("Power-up expired. Resetting power-up state.");
     }
 
     private void OnCollisionEnter(Collision collision)
@@ -87,8 +96,11 @@ public class PlayerController : MonoBehaviour
         {
             Debug.Log("Collided with: " + collision.gameObject.name + " powerup set to " + currentPowerUp.ToString());
             Rigidbody enemyRigidBody = collision.gameObject.GetComponent<Rigidbody>();
-            Vector3 awayFromPlayer = (collision.gameObject.transform.position - transform.position);
-            enemyRigidBody.AddForce(awayFromPlayer * powerupStrength, ForceMode.Impulse);
+            if (enemyRigidBody != null)
+            {
+                Vector3 awayFromPlayer = (collision.gameObject.transform.position - transform.position);
+                enemyRigidBody.AddForce(awayFromPlayer * powerupStrength, ForceMode.Impulse);
+            }
         }
     }
 
@@ -96,44 +108,55 @@ public class PlayerController : MonoBehaviour
     {
         foreach (var enemy in FindObjectsOfType<Enemy>())
         {
-            tmpRocket = Instantiate(rocketPrefab, transform.position + Vector3.up, Quaternion.identity);
-            tmpRocket.GetComponent<RocketBehaviour>().Fire(enemy.transform);
+            if (enemy != null)
+            {
+                Debug.Log($"Launching rocket towards {enemy.name}");
+                tmpRocket = Instantiate(rocketPrefab, transform.position + Vector3.up, Quaternion.identity);
+                var rocketBehaviour = tmpRocket.GetComponent<RocketBehaviour>();
+                if (rocketBehaviour != null)
+                {
+                    rocketBehaviour.Fire(enemy.transform);
+                }
+                else
+                {
+                    Debug.LogWarning("RocketBehaviour component not found on rocketPrefab.");
+                }
+            }
         }
     }
 
     IEnumerator Smash()
     {
+        Debug.Log("Smash coroutine started.");
         var enemies = FindObjectsOfType<Enemy>();
 
-        // Store the y position before taking off
         floorY = transform.position.y;
-
-        // Calculate the amount of time we will go up
         float jumpTime = Time.time + hangTime;
 
+        // Move the player up
         while (Time.time < jumpTime)
         {
-            // Move the player up while still keeping their x velocity.
             playerRb.velocity = new Vector2(playerRb.velocity.x, smashSpeed);
             yield return null;
         }
 
-        // Now move the player down
+        // Move the player down
         while (transform.position.y > floorY)
         {
             playerRb.velocity = new Vector2(playerRb.velocity.x, -smashSpeed * 2);
             yield return null;
         }
 
-        // Cycle through all enemies
-        for (int i = 0; i < enemies.Length; i++)
+        // Apply explosion force to enemies
+        foreach (var enemy in enemies)
         {
-            // Apply an explosion force that originates from our position.
-            if (enemies[i] != null)
-                enemies[i].GetComponent<Rigidbody>().AddExplosionForce(explosionForce, transform.position, explosionRadius, 0.0f, ForceMode.Impulse);
+            if (enemy != null)
+            {
+                enemy.GetComponent<Rigidbody>().AddExplosionForce(explosionForce, transform.position, explosionRadius, 0.0f, ForceMode.Impulse);
+            }
         }
 
-        // We are no longer smashing, so set the boolean to false
         smashing = false;
+        Debug.Log("Smash coroutine completed.");
     }
 }

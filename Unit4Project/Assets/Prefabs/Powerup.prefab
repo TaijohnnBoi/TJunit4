@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 8838786060434666700}
   - component: {fileID: 8831026288652807914}
   - component: {fileID: 7738415550823635591}
+  - component: {fileID: -4330162606502709918}
   m_Layer: 0
   m_Name: Powerup
   m_TagString: Powerup
@@ -62,7 +63,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 41680dad0f0243748b4e228f49a2e3c4, type: 2}
+  - {fileID: 2100000, guid: 46618382362965b4e981188201f4b199, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -105,3 +106,20 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.5122994, y: 0.48738983, z: 0.109224334}
   m_Center: {x: 0, y: 0.00000000745058, z: 0.0000000018626451}
+--- !u!114 &-4330162606502709918
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8852423987488955478}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e83911169e7fe8a4fa41c1553f34c131, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  powerUpType: 1
+  hangTime: 0
+  smashSpeed: 0
+  explosionForce: 0
+  explosionRadius: 0
